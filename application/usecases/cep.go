@@ -33,7 +33,7 @@ func (c *CepUseCase) Search(cep string) (dtos.ViaCepResponse, app.Errors) {
 		})
 	}
 
-	if isEmpty(*data) {
+	if c.IsEmpty(*data) {
 		return dtos.ViaCepResponse{}, app.CreateErrors(app.Error{
 			Code:    http.StatusNotFound,
 			Type:    app.ERROR_NOT_FOUND,
@@ -44,7 +44,7 @@ func (c *CepUseCase) Search(cep string) (dtos.ViaCepResponse, app.Errors) {
 	return *data, nil
 }
 
-func isEmpty(response dtos.ViaCepResponse) bool {
+func (c *CepUseCase) IsEmpty(response dtos.ViaCepResponse) bool {
 	return response.Cep == "" && response.Logradouro == "" && response.Bairro == "" &&
 		response.Localidade == "" && response.Uf == ""
 }

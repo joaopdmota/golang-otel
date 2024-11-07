@@ -5,25 +5,25 @@ import (
 	config "cep_weather/infra/config"
 	"cep_weather/infra/handlers"
 	repositories "cep_weather/infra/repositories"
+	httpclient "cep_weather/infra/repositories/http"
 	"cep_weather/infra/server"
 	"fmt"
 	"net/http"
+	"time"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, World!")
-}
-
 func main() {
-	_, err := config.LoadEnvs()
-	if err != nil {
-		fmt.Println("Error loading configuration:", err)
-		return
+	config.LoadEnvs()
+
+	client := &http.Client{
+		Timeout: 5 * time.Second,
 	}
 
+	httpClient := httpclient.NewDefaultHTTPClient(client)
+
 	service := server.NewHTTPService("8080")
-	cepRepository := repositories.NewCepRepository()
-	weatherRepository := repositories.NewWeatherRepository()
+	cepRepository := repositories.NewCepRepository(httpClient)
+	weatherRepository := repositories.NewWeatherRepository(httpClient)
 
 	cepUseCase := usecases.NewCepUseCase(cepRepository)
 	weatherUseCase := usecases.NewWeatherUseCase(weatherRepository)
@@ -36,7 +36,6 @@ func main() {
 		fmt.Println("Erro ao iniciar o servidor:", err)
 	}
 
-	http.HandleFunc("/", handler)
 	fmt.Println("Running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }

@@ -1,0 +1,650 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>app: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">cep_weather/application/app/error.go (100.0%)</option>
+				
+				<option value="file1">cep_weather/application/usecases/cep.go (100.0%)</option>
+				
+				<option value="file2">cep_weather/application/usecases/weather.go (100.0%)</option>
+				
+				<option value="file3">cep_weather/cmd/server/main.go (0.0%)</option>
+				
+				<option value="file4">cep_weather/infra/config/env.go (100.0%)</option>
+				
+				<option value="file5">cep_weather/infra/handlers/cep.go (100.0%)</option>
+				
+				<option value="file6">cep_weather/infra/repositories/cep.go (100.0%)</option>
+				
+				<option value="file7">cep_weather/infra/repositories/http/http_client.go (100.0%)</option>
+				
+				<option value="file8">cep_weather/infra/repositories/weather.go (100.0%)</option>
+				
+				<option value="file9">cep_weather/infra/server/server.go (64.3%)</option>
+				
+				<option value="file10">cep_weather/mocks/cep_usecases.go (50.0%)</option>
+				
+				<option value="file11">cep_weather/mocks/httpclient.go (100.0%)</option>
+				
+				<option value="file12">cep_weather/mocks/httpreader.go (100.0%)</option>
+				
+				<option value="file13">cep_weather/mocks/weather_usecases.go (33.3%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package app
+
+const (
+        ERROR_UNKNOW               = "UNKNOW"
+        ERROR_BAD_REQUEST          = "BAD_REQUEST"
+        ERROR_UNPROCESSABLE_ENTITY = "UNPROCESSABLE_ENTITY"
+        ERROR_NOT_FOUND            = "NOT_FOUND"
+)
+
+type Error struct {
+        Code    int    `json:"code"`
+        Type    string `json:"type"`
+        Path    string `json:"path,omitempty"`
+        Message string `json:"message,omitempty"`
+}
+
+type Errors []Error
+
+type ErrorsResponseDTO struct {
+        Errors Errors `json:"errors"`
+}
+
+func CreateErrors(errs ...Error) Errors <span class="cov8" title="1">{
+        var errors Errors
+
+        for _, err := range errs </span><span class="cov8" title="1">{
+                errors = append(errors, err)
+        }</span>
+
+        <span class="cov8" title="1">return errors</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package usecases
+
+import (
+        "cep_weather/application/app"
+        "cep_weather/application/interfaces"
+        "cep_weather/infra/dtos"
+        "net/http"
+)
+
+type CepUseCase struct {
+        cepRepository interfaces.ICepRepository
+}
+
+func NewCepUseCase(cr interfaces.ICepRepository) *CepUseCase <span class="cov8" title="1">{
+        return &amp;CepUseCase{cepRepository: cr}
+}</span>
+
+func (c *CepUseCase) Search(cep string) (dtos.ViaCepResponse, app.Errors) <span class="cov8" title="1">{
+        if len(cep) != 8 </span><span class="cov8" title="1">{
+                return dtos.ViaCepResponse{}, app.CreateErrors(app.Error{
+                        Message: "Invalid zip code",
+                        Code:    http.StatusUnprocessableEntity,
+                        Type:    app.ERROR_UNPROCESSABLE_ENTITY,
+                })
+        }</span>
+
+        <span class="cov8" title="1">data, err := c.cepRepository.GetCep(cep)
+
+        if err != nil </span><span class="cov8" title="1">{
+                return dtos.ViaCepResponse{}, app.CreateErrors(app.Error{
+                        Code: http.StatusInternalServerError,
+                        Type: app.ERROR_UNKNOW,
+                })
+        }</span>
+
+        <span class="cov8" title="1">if c.IsEmpty(*data) </span><span class="cov8" title="1">{
+                return dtos.ViaCepResponse{}, app.CreateErrors(app.Error{
+                        Code:    http.StatusNotFound,
+                        Type:    app.ERROR_NOT_FOUND,
+                        Message: "Zip code not found",
+                })
+        }</span>
+
+        <span class="cov8" title="1">return *data, nil</span>
+}
+
+func (c *CepUseCase) IsEmpty(response dtos.ViaCepResponse) bool <span class="cov8" title="1">{
+        return response.Cep == "" &amp;&amp; response.Logradouro == "" &amp;&amp; response.Bairro == "" &amp;&amp;
+                response.Localidade == "" &amp;&amp; response.Uf == ""
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package usecases
+
+import (
+        "cep_weather/application/app"
+        "cep_weather/application/interfaces"
+        "cep_weather/application/usecases/dtos"
+        "fmt"
+        "net/http"
+)
+
+type WeatherUseCase struct {
+        weatherRepository interfaces.IWeatherRepository
+}
+
+func NewWeatherUseCase(wr interfaces.IWeatherRepository) *WeatherUseCase <span class="cov8" title="1">{
+        return &amp;WeatherUseCase{weatherRepository: wr}
+}</span>
+
+func (w *WeatherUseCase) SearchByCity(city string) (dtos.WeatherUseCaseOutput, app.Errors) <span class="cov8" title="1">{
+        data, err := w.weatherRepository.GetWeather(city)
+
+        if err != nil </span><span class="cov8" title="1">{
+                return dtos.WeatherUseCaseOutput{}, app.CreateErrors(app.Error{
+                        Code: http.StatusUnprocessableEntity,
+                        Type: app.ERROR_UNKNOW,
+                })
+        }</span>
+
+        <span class="cov8" title="1">return dtos.WeatherUseCaseOutput{
+                TempC: fmt.Sprintf("%.2f", data.Current.TempC),
+                TempF: w.TransformCelsiusToFahrenheit(data.Current.TempC),
+                TempK: w.TransformCelsiusToKelvin(data.Current.TempC),
+        }, nil</span>
+}
+
+func (w *WeatherUseCase) TransformCelsiusToFahrenheit(celsius float64) string <span class="cov8" title="1">{
+        fahrenheightStr := fmt.Sprintf("%.2f", celsius*1.8+32)
+
+        return fahrenheightStr
+}</span>
+
+func (w *WeatherUseCase) TransformCelsiusToKelvin(celsius float64) string <span class="cov8" title="1">{
+        kelvinStr := fmt.Sprintf("%.2f", celsius+273)
+
+        return kelvinStr
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package main
+
+import (
+        "cep_weather/application/usecases"
+        config "cep_weather/infra/config"
+        "cep_weather/infra/handlers"
+        repositories "cep_weather/infra/repositories"
+        httpclient "cep_weather/infra/repositories/http"
+        "cep_weather/infra/server"
+        "fmt"
+        "net/http"
+        "time"
+)
+
+func main() <span class="cov0" title="0">{
+        config.LoadEnvs()
+
+        client := &amp;http.Client{
+                Timeout: 5 * time.Second,
+        }
+
+        httpClient := httpclient.NewDefaultHTTPClient(client)
+
+        service := server.NewHTTPService("8080")
+        cepRepository := repositories.NewCepRepository(httpClient)
+        weatherRepository := repositories.NewWeatherRepository(httpClient)
+
+        cepUseCase := usecases.NewCepUseCase(cepRepository)
+        weatherUseCase := usecases.NewWeatherUseCase(weatherRepository)
+
+        cepHandler := handlers.NewCepHandler(cepUseCase, weatherUseCase)
+
+        service.AddRoute(http.MethodGet, "/cep/:id", cepHandler.GetCEPWeather)
+
+        if err := service.Start(); err != nil </span><span class="cov0" title="0">{
+                fmt.Println("Erro ao iniciar o servidor:", err)
+        }</span>
+
+        <span class="cov0" title="0">fmt.Println("Running on http://localhost:8080")
+        http.ListenAndServe(":8080", nil)</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package env
+
+import (
+        "fmt"
+        "os"
+        "strconv"
+)
+
+type ConfigMap struct {
+        WeatherApiKey string
+        Port          int
+}
+
+var Config *ConfigMap
+
+func LoadEnvs() *ConfigMap <span class="cov8" title="1">{
+        if Config != nil </span><span class="cov8" title="1">{
+                return Config
+        }</span>
+
+        <span class="cov8" title="1">Config = &amp;ConfigMap{
+                WeatherApiKey: GetEnvString("WEATHER_API_KEY"),
+                Port:          GetEnvNumber("PORT"),
+        }
+
+        return Config</span>
+}
+
+func GetEnvString(key string) string <span class="cov8" title="1">{
+        value := os.Getenv(key)
+        if value == "" </span><span class="cov8" title="1">{
+                panic(fmt.Sprintf("Environment variable %s is required", key))</span>
+        }
+        <span class="cov8" title="1">return value</span>
+}
+
+func GetEnvNumber(key string) int <span class="cov8" title="1">{
+        valueStr := os.Getenv(key)
+        if valueStr == "" </span><span class="cov8" title="1">{
+                panic(fmt.Sprintf("Environment variable %s is required", key))</span>
+        }
+
+        <span class="cov8" title="1">value, err := strconv.Atoi(valueStr)
+        if err != nil </span><span class="cov8" title="1">{
+                panic(fmt.Sprintf("Environment variable %s must be a valid integer", key))</span>
+        }
+
+        <span class="cov8" title="1">return value</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package handlers
+
+import (
+        "cep_weather/application/app"
+        "cep_weather/application/interfaces"
+        "net/http"
+
+        "github.com/labstack/echo/v4"
+)
+
+type CepHandler struct {
+        cepUseCase     interfaces.ICepUseCase
+        weatherUseCase interfaces.IWeatherUseCase
+}
+
+func NewCepHandler(cepUseCase interfaces.ICepUseCase, weatherUseCase interfaces.IWeatherUseCase) *CepHandler <span class="cov8" title="1">{
+        return &amp;CepHandler{
+                cepUseCase:     cepUseCase,
+                weatherUseCase: weatherUseCase,
+        }
+}</span>
+
+func (h *CepHandler) GetCEPWeather(c echo.Context) error <span class="cov8" title="1">{
+        cep := c.Param("id")
+
+        cepResponse, err := h.cepUseCase.Search(cep)
+
+        if err != nil </span><span class="cov8" title="1">{
+                return c.JSON(err[0].Code, app.CreateErrors(app.Error{
+                        Code:    err[0].Code,
+                        Message: err[0].Message,
+                        Type:    err[0].Type,
+                }))
+        }</span>
+
+        <span class="cov8" title="1">weatherResponse, err := h.weatherUseCase.SearchByCity(cepResponse.Localidade)
+
+        if err != nil </span><span class="cov8" title="1">{
+                return c.JSON(err[0].Code, app.CreateErrors(app.Error{
+                        Code:    err[0].Code,
+                        Message: err[0].Message,
+                        Type:    err[0].Type,
+                }))
+        }</span>
+
+        <span class="cov8" title="1">return c.JSON(http.StatusOK, weatherResponse)</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package repositories
+
+import (
+        "cep_weather/infra/dtos"
+        http "cep_weather/infra/repositories/http"
+        "encoding/json"
+        "fmt"
+        httpNet "net/http"
+)
+
+type CepRepository struct {
+        client http.HTTPClient
+}
+
+func NewCepRepository(client http.HTTPClient) *CepRepository <span class="cov8" title="1">{
+        return &amp;CepRepository{client: client}
+}</span>
+
+func (s *CepRepository) GetCep(cep string) (*dtos.ViaCepResponse, error) <span class="cov8" title="1">{
+        resp, err := s.client.Get(fmt.Sprintf("https://viacep.com.br/ws/%s/json/", cep))
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">if resp.StatusCode &gt;= httpNet.StatusBadRequest </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("erro na requisição: status code %d", resp.StatusCode)
+        }</span>
+
+        <span class="cov8" title="1">defer resp.Body.Close()
+
+        var viaCepResponse dtos.ViaCepResponse
+        if err := json.NewDecoder(resp.Body).Decode(&amp;viaCepResponse); err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return &amp;viaCepResponse, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package httpclient
+
+import "net/http"
+
+type HTTPClient interface {
+        Get(url string) (*http.Response, error)
+}
+
+type DefaultHTTPClient struct {
+        client *http.Client
+}
+
+func NewDefaultHTTPClient(client *http.Client) *DefaultHTTPClient <span class="cov8" title="1">{
+        return &amp;DefaultHTTPClient{client: client}
+}</span>
+
+func (c *DefaultHTTPClient) Get(url string) (*http.Response, error) <span class="cov8" title="1">{
+        return c.client.Get(url)
+}</span>
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package repositories
+
+import (
+        env "cep_weather/infra/config"
+        "cep_weather/infra/dtos"
+        http "cep_weather/infra/repositories/http"
+        "encoding/json"
+        "fmt"
+        "io/ioutil"
+        httpNet "net/http"
+        "net/url"
+)
+
+type WeatherRepository struct {
+        client http.HTTPClient
+}
+
+func NewWeatherRepository(client http.HTTPClient) *WeatherRepository <span class="cov8" title="1">{
+        return &amp;WeatherRepository{client: client}
+}</span>
+
+func (s *WeatherRepository) GetWeather(city string) (*dtos.WeatherResponse, error) <span class="cov8" title="1">{
+        encodedCity := url.QueryEscape(city)
+
+        url := fmt.Sprintf("http://api.weatherapi.com/v1/current.json?key=%s&amp;q=%s", env.Config.WeatherApiKey, encodedCity)
+
+        resp, err := s.client.Get(url)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">if resp.StatusCode &gt;= httpNet.StatusBadRequest </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("erro na requisição: status code %d", resp.StatusCode)
+        }</span>
+
+        <span class="cov8" title="1">defer resp.Body.Close()
+
+        body, err := ioutil.ReadAll(resp.Body)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">var weather dtos.WeatherResponse
+        err = json.Unmarshal(body, &amp;weather)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return &amp;weather, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package server
+
+import (
+        "fmt"
+        "net/http"
+
+        "github.com/labstack/echo/v4"
+)
+
+type HTTPService struct {
+        server *http.Server
+        echo   *echo.Echo
+}
+
+func NewHTTPService(port string) *HTTPService <span class="cov8" title="1">{
+        e := echo.New()
+        server := &amp;http.Server{
+                Addr:    ":" + port,
+                Handler: e,
+        }
+
+        return &amp;HTTPService{
+                server: server,
+                echo:   e,
+        }
+}</span>
+
+func (s *HTTPService) AddRoute(method, pattern string, handler echo.HandlerFunc) <span class="cov8" title="1">{
+        switch method </span>{
+        case http.MethodGet:<span class="cov8" title="1">
+                s.echo.GET(pattern, handler)</span>
+        case http.MethodPost:<span class="cov8" title="1">
+                s.echo.POST(pattern, handler)</span>
+        case http.MethodPut:<span class="cov8" title="1">
+                s.echo.PUT(pattern, handler)</span>
+        case http.MethodDelete:<span class="cov8" title="1">
+                s.echo.DELETE(pattern, handler)</span>
+        default:<span class="cov0" title="0">
+                fmt.Printf("Método %s não é suportado\n", method)</span>
+        }
+}
+
+func (s *HTTPService) Start() error <span class="cov0" title="0">{
+        fmt.Printf("Servidor rodando na porta %s...\n", s.server.Addr)
+        return s.echo.StartServer(s.server)
+}</span>
+
+func (s *HTTPService) Stop() error <span class="cov0" title="0">{
+        fmt.Println("Parando o servidor...")
+        return s.echo.Close()
+}</span>
+
+func (s *HTTPService) Echo() *echo.Echo <span class="cov8" title="1">{
+        return s.echo
+}</span>
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package mocks
+
+import (
+        "cep_weather/application/app"
+        "cep_weather/infra/dtos"
+
+        "github.com/stretchr/testify/mock"
+)
+
+type MockCepUseCase struct {
+        mock.Mock
+}
+
+func (m *MockCepUseCase) Search(cep string) (dtos.ViaCepResponse, app.Errors) <span class="cov8" title="1">{
+        args := m.Called(cep)
+        return args.Get(0).(dtos.ViaCepResponse), args.Get(1).(app.Errors)
+}</span>
+
+func (m *MockCepUseCase) IsEmpty(response dtos.ViaCepResponse) bool <span class="cov0" title="0">{
+        args := m.Called(response)
+        return args.Bool(0)
+}</span>
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package mocks
+
+import "net/http"
+
+type MockHTTPClient struct {
+        Response *http.Response
+        Err      error
+}
+
+func (m *MockHTTPClient) Get(url string) (*http.Response, error) <span class="cov8" title="1">{
+        return m.Response, m.Err
+}</span>
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package mocks
+
+import "fmt"
+
+type MockErrorReader struct{}
+
+func (m *MockErrorReader) Read(p []byte) (n int, err error) <span class="cov8" title="1">{
+        return 0, fmt.Errorf("failed to read response body") // Gera um erro sempre que tentar ler
+}</span>
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package mocks
+
+import (
+        "cep_weather/application/app"
+        "cep_weather/application/usecases/dtos"
+
+        "github.com/stretchr/testify/mock"
+)
+
+type MockWeatherUseCase struct {
+        mock.Mock
+}
+
+func (m *MockWeatherUseCase) SearchByCity(city string) (dtos.WeatherUseCaseOutput, app.Errors) <span class="cov8" title="1">{
+        args := m.Called(city)
+        return args.Get(0).(dtos.WeatherUseCaseOutput), args.Get(1).(app.Errors)
+}</span>
+
+func (m *MockWeatherUseCase) TransformCelsiusToFahrenheit(celsius float64) string <span class="cov0" title="0">{
+        args := m.Called(celsius)
+        return args.String(0)
+}</span>
+
+func (m *MockWeatherUseCase) TransformCelsiusToKelvin(celsius float64) string <span class="cov0" title="0">{
+        args := m.Called(celsius)
+        return args.String(0)
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

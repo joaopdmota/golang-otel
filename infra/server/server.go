@@ -36,7 +36,9 @@ func (s *HTTPService) AddRoute(method, pattern string, handler echo.HandlerFunc)
 	case http.MethodDelete:
 		s.echo.DELETE(pattern, handler)
 	default:
-		fmt.Printf("Método %s não é suportado\n", method)
+		s.echo.Any(pattern, func(c echo.Context) error {
+			return echo.NewHTTPError(http.StatusMethodNotAllowed, fmt.Sprintf("Método %s não é suportado", method))
+		})
 	}
 }
 
@@ -48,4 +50,8 @@ func (s *HTTPService) Start() error {
 func (s *HTTPService) Stop() error {
 	fmt.Println("Parando o servidor...")
 	return s.echo.Close()
+}
+
+func (s *HTTPService) Echo() *echo.Echo {
+	return s.echo
 }

@@ -2,18 +2,18 @@ package handlers
 
 import (
 	"cep_weather/application/app"
-	"cep_weather/application/usecases"
+	"cep_weather/application/interfaces"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
 type CepHandler struct {
-	cepUseCase     *usecases.CepUseCase
-	weatherUseCase *usecases.WeatherUseCase
+	cepUseCase     interfaces.ICepUseCase
+	weatherUseCase interfaces.IWeatherUseCase
 }
 
-func NewCepHandler(cepUseCase *usecases.CepUseCase, weatherUseCase *usecases.WeatherUseCase) *CepHandler {
+func NewCepHandler(cepUseCase interfaces.ICepUseCase, weatherUseCase interfaces.IWeatherUseCase) *CepHandler {
 	return &CepHandler{
 		cepUseCase:     cepUseCase,
 		weatherUseCase: weatherUseCase,
@@ -23,18 +23,10 @@ func NewCepHandler(cepUseCase *usecases.CepUseCase, weatherUseCase *usecases.Wea
 func (h *CepHandler) GetCEPWeather(c echo.Context) error {
 	cep := c.Param("id")
 
-	if cep == "" {
-		return c.JSON(http.StatusBadRequest, app.CreateErrors(app.Error{
-			Code:    http.StatusBadRequest,
-			Type:    app.ERROR_BAD_REQUEST,
-			Message: "ID é obrigatório",
-		}))
-	}
-
 	cepResponse, err := h.cepUseCase.Search(cep)
 
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, app.CreateErrors(app.Error{
+		return c.JSON(err[0].Code, app.CreateErrors(app.Error{
 			Code:    err[0].Code,
 			Message: err[0].Message,
 			Type:    err[0].Type,
@@ -44,7 +36,7 @@ func (h *CepHandler) GetCEPWeather(c echo.Context) error {
 	weatherResponse, err := h.weatherUseCase.SearchByCity(cepResponse.Localidade)
 
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, app.CreateErrors(app.Error{
+		return c.JSON(err[0].Code, app.CreateErrors(app.Error{
 			Code:    err[0].Code,
 			Message: err[0].Message,
 			Type:    err[0].Type,

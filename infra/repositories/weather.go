@@ -3,27 +3,34 @@ package repositories
 import (
 	env "cep_weather/infra/config"
 	"cep_weather/infra/dtos"
+	http "cep_weather/infra/repositories/http"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
+	httpNet "net/http"
 	"net/url"
 )
 
-type WeatherRepository struct{}
+type WeatherRepository struct {
+	client http.HTTPClient
+}
 
-func NewWeatherRepository() *WeatherRepository {
-	return &WeatherRepository{}
+func NewWeatherRepository(client http.HTTPClient) *WeatherRepository {
+	return &WeatherRepository{client: client}
 }
 
 func (s *WeatherRepository) GetWeather(city string) (*dtos.WeatherResponse, error) {
 	encodedCity := url.QueryEscape(city)
 
-	url := fmt.Sprintf("http://api.weatherapi.com/v1/current.json?key=%s&q=%s", env.Config.APIKey, encodedCity)
+	url := fmt.Sprintf("http://api.weatherapi.com/v1/current.json?key=%s&q=%s", env.Config.WeatherApiKey, encodedCity)
 
-	resp, err := http.Get(url)
+	resp, err := s.client.Get(url)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode >= httpNet.StatusBadRequest {
+		return nil, fmt.Errorf("erro na requisição: status code %d", resp.StatusCode)
 	}
 
 	defer resp.Body.Close()

@@ -16,8 +16,8 @@ func NewWeatherUseCase(wr interfaces.IWeatherRepository) *WeatherUseCase {
 	return &WeatherUseCase{weatherRepository: wr}
 }
 
-func (r *WeatherUseCase) SearchByCity(city string) (dtos.WeatherUseCaseOutput, app.Errors) {
-	data, err := r.weatherRepository.GetWeather(city)
+func (w *WeatherUseCase) SearchByCity(city string) (dtos.WeatherUseCaseOutput, app.Errors) {
+	data, err := w.weatherRepository.GetWeather(city)
 
 	if err != nil {
 		return dtos.WeatherUseCaseOutput{}, app.CreateErrors(app.Error{
@@ -28,18 +28,18 @@ func (r *WeatherUseCase) SearchByCity(city string) (dtos.WeatherUseCaseOutput, a
 
 	return dtos.WeatherUseCaseOutput{
 		TempC: fmt.Sprintf("%.2f", data.Current.TempC),
-		TempF: transformCelsiusToFahrenheit(data.Current.TempC),
-		TempK: transformCelsiusToKelvin(data.Current.TempC),
+		TempF: w.TransformCelsiusToFahrenheit(data.Current.TempC),
+		TempK: w.TransformCelsiusToKelvin(data.Current.TempC),
 	}, nil
 }
 
-func transformCelsiusToFahrenheit(celsius float64) string {
+func (w *WeatherUseCase) TransformCelsiusToFahrenheit(celsius float64) string {
 	fahrenheightStr := fmt.Sprintf("%.2f", celsius*1.8+32)
 
 	return fahrenheightStr
 }
 
-func transformCelsiusToKelvin(celsius float64) string {
+func (w *WeatherUseCase) TransformCelsiusToKelvin(celsius float64) string {
 	kelvinStr := fmt.Sprintf("%.2f", celsius+273)
 
 	return kelvinStr

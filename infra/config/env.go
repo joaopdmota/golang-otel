@@ -7,23 +7,23 @@ import (
 )
 
 type ConfigMap struct {
-	APIKey string
-	Port   int
+	WeatherApiKey string
+	Port          int
 }
 
 var Config *ConfigMap
 
-func LoadEnvs() (*ConfigMap, error) {
+func LoadEnvs() *ConfigMap {
 	if Config != nil {
-		return Config, nil
+		return Config
 	}
 
 	Config = &ConfigMap{
-		APIKey: GetEnvString("API_KEY"),
-		Port:   GetEnvNumber("PORT"),
+		WeatherApiKey: GetEnvString("WEATHER_API_KEY"),
+		Port:          GetEnvNumber("PORT"),
 	}
 
-	return Config, nil
+	return Config
 }
 
 func GetEnvString(key string) string {
