@@ -8,7 +8,7 @@ import (
 
 type ConfigMap struct {
 	WeatherApiKey string
-	Port          int
+	ApiPort       int
 }
 
 var Config *ConfigMap
@@ -20,7 +20,7 @@ func LoadEnvs() *ConfigMap {
 
 	Config = &ConfigMap{
 		WeatherApiKey: GetEnvString("WEATHER_API_KEY"),
-		Port:          GetEnvNumber("PORT"),
+		ApiPort:       GetEnvNumber("API_PORT"),
 	}
 
 	return Config

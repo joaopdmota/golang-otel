@@ -18,6 +18,7 @@ func NewCepRepository(client http.HTTPClient) *CepRepository {
 
 func (s *CepRepository) GetCep(cep string) (*dtos.ViaCepResponse, error) {
 	resp, err := s.client.Get(fmt.Sprintf("https://viacep.com.br/ws/%s/json/", cep))
+
 	if err != nil {
 		return nil, err
 	}

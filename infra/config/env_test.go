@@ -8,12 +8,12 @@ import (
 
 func setupEnvVars() {
 	os.Setenv("WEATHER_API_KEY", "test-api-key")
-	os.Setenv("PORT", "8080")
+	os.Setenv("API_PORT", "8080")
 }
 
 func clearEnvVars() {
 	os.Unsetenv("WEATHER_API_KEY")
-	os.Unsetenv("PORT")
+	os.Unsetenv("API_PORT")
 }
 
 func TestLoadEnvs(t *testing.T) {
@@ -26,8 +26,8 @@ func TestLoadEnvs(t *testing.T) {
 		t.Errorf("Expected WEATHER_API_KEY to be 'test-api-key', got %s", config.WeatherApiKey)
 	}
 
-	if config.Port != 8080 {
-		t.Errorf("Expected PORT to be 8080, got %d", config.Port)
+	if config.ApiPort != 8080 {
+		t.Errorf("Expected PORT to be 8080, got %d", config.ApiPort)
 	}
 }
 

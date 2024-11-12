@@ -4,12 +4,12 @@ services:
   server:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "8080:8080"
     env_file:
       - .env
     volumes:
       - .:/app
-      - /app/tmp 
+      - /app/tmp
     command: ["air"]
