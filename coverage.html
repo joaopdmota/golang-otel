@@ -73,7 +73,7 @@
 				
 				<option value="file8">cep_weather/infra/repositories/weather.go (100.0%)</option>
 				
-				<option value="file9">cep_weather/infra/server/server.go (64.3%)</option>
+				<option value="file9">cep_weather/infra/server/server.go (60.0%)</option>
 				
 				<option value="file10">cep_weather/mocks/cep_usecases.go (50.0%)</option>
 				
@@ -281,7 +281,7 @@ import (
 
 type ConfigMap struct {
         WeatherApiKey string
-        Port          int
+        ApiPort       int
 }
 
 var Config *ConfigMap
@@ -293,7 +293,7 @@ func LoadEnvs() *ConfigMap <span class="cov8" title="1">{
 
         <span class="cov8" title="1">Config = &amp;ConfigMap{
                 WeatherApiKey: GetEnvString("WEATHER_API_KEY"),
-                Port:          GetEnvNumber("PORT"),
+                ApiPort:       GetEnvNumber("API_PORT"),
         }
 
         return Config</span>
@@ -391,6 +391,7 @@ func NewCepRepository(client http.HTTPClient) *CepRepository <span class="cov8" 
 
 func (s *CepRepository) GetCep(cep string) (*dtos.ViaCepResponse, error) <span class="cov8" title="1">{
         resp, err := s.client.Get(fmt.Sprintf("https://viacep.com.br/ws/%s/json/", cep))
+
         if err != nil </span><span class="cov8" title="1">{
                 return nil, err
         }</span>
@@ -521,7 +522,9 @@ func (s *HTTPService) AddRoute(method, pattern string, handler echo.HandlerFunc)
         case http.MethodDelete:<span class="cov8" title="1">
                 s.echo.DELETE(pattern, handler)</span>
         default:<span class="cov0" title="0">
-                fmt.Printf("Método %s não é suportado\n", method)</span>
+                s.echo.Any(pattern, func(c echo.Context) error </span><span class="cov0" title="0">{
+                        return echo.NewHTTPError(http.StatusMethodNotAllowed, fmt.Sprintf("Método %s não é suportado", method))
+                }</span>)
         }
 }
 

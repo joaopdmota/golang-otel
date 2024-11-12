@@ -20,7 +20,7 @@ import (
 
 func TestMain(m *testing.M) {
 	os.Setenv("WEATHER_API_KEY", "123")
-	os.Setenv("PORT", "8080")
+	os.Setenv("API_PORT", "8080")
 	env.LoadEnvs()
 	code := m.Run()
 	os.Exit(code)
