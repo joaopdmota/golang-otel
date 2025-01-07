@@ -2,9 +2,9 @@ package repositories_test
 
 import (
 	"bytes"
-	"cep_weather/infra/dtos"
-	"cep_weather/infra/repositories"
-	"cep_weather/mocks"
+	"cep_weather_otel/infra/dtos"
+	"cep_weather_otel/infra/repositories"
+	"cep_weather_otel/mocks"
 	"encoding/json"
 	"errors"
 	"net/http"

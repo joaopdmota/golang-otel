@@ -1,18 +1,19 @@
 package usecases
 
 import (
-	"cep_weather/application/app"
-	"cep_weather/application/interfaces"
-	"cep_weather/infra/dtos"
+	"cep_weather_otel/application/app"
+	"cep_weather_otel/application/interfaces"
+	"cep_weather_otel/infra/dtos"
 	"net/http"
 )
 
 type CepUseCase struct {
-	cepRepository interfaces.ICepRepository
+	cepRepository     interfaces.ICepRepository
+	weatherRepository interfaces.IWeatherRepository
 }
 
-func NewCepUseCase(cr interfaces.ICepRepository) *CepUseCase {
-	return &CepUseCase{cepRepository: cr}
+func NewCepUseCase(cr interfaces.ICepRepository, wr interfaces.IWeatherRepository) *CepUseCase {
+	return &CepUseCase{cepRepository: cr, weatherRepository: wr}
 }
 
 func (c *CepUseCase) Search(cep string) (dtos.ViaCepResponse, app.Errors) {

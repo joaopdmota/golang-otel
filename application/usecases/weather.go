@@ -1,9 +1,9 @@
 package usecases
 
 import (
-	"cep_weather/application/app"
-	"cep_weather/application/interfaces"
-	"cep_weather/application/usecases/dtos"
+	"cep_weather_otel/application/app"
+	"cep_weather_otel/application/interfaces"
+	"cep_weather_otel/application/usecases/dtos"
 	"fmt"
 	"net/http"
 )
@@ -17,7 +17,7 @@ func NewWeatherUseCase(wr interfaces.IWeatherRepository) *WeatherUseCase {
 }
 
 func (w *WeatherUseCase) SearchByCity(city string) (dtos.WeatherUseCaseOutput, app.Errors) {
-	data, err := w.weatherRepository.GetWeather(city)
+	data, err := w.weatherRepository.GetWeatherApi(city)
 
 	if err != nil {
 		return dtos.WeatherUseCaseOutput{}, app.CreateErrors(app.Error{

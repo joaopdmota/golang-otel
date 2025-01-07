@@ -7,8 +7,12 @@ import (
 )
 
 type ConfigMap struct {
-	WeatherApiKey string
-	ApiPort       int
+	WeatherApiKey           string
+	ApiPort                 int
+	CepMicroserviceUrl      string
+	CepMicroserviceName     string
+	WeatherMicroserviceUrl  string
+	WeatherMicroserviceName string
 }
 
 var Config *ConfigMap
@@ -19,8 +23,12 @@ func LoadEnvs() *ConfigMap {
 	}
 
 	Config = &ConfigMap{
-		WeatherApiKey: GetEnvString("WEATHER_API_KEY"),
-		ApiPort:       GetEnvNumber("API_PORT"),
+		WeatherApiKey:           GetEnvString("WEATHER_API_KEY"),
+		ApiPort:                 GetEnvNumber("API_PORT"),
+		CepMicroserviceUrl:      GetEnvString("CEP_MICROSERVICE_URL"),
+		CepMicroserviceName:     GetEnvString("CEP_MICROSERVICE_NAME"),
+		WeatherMicroserviceUrl:  GetEnvString("WEATHER_MICROSERVICE_URL"),
+		WeatherMicroserviceName: GetEnvString("WEATHER_MICROSERVICE_NAME"),
 	}
 
 	return Config

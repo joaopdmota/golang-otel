@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"cep_weather/infra/dtos"
+	"cep_weather_otel/infra/dtos"
 )
 
 type ICepRepository interface {

@@ -1,8 +1,8 @@
 package mocks
 
 import (
-	"cep_weather/application/app"
-	"cep_weather/infra/dtos"
+	"cep_weather_otel/application/app"
+	"cep_weather_otel/infra/dtos"
 
 	"github.com/stretchr/testify/mock"
 )

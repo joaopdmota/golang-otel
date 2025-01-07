@@ -1,7 +1,8 @@
 package interfaces
 
-import "cep_weather/infra/dtos"
+import "cep_weather_otel/infra/dtos"
 
 type IWeatherRepository interface {
-	GetWeather(city string) (*dtos.WeatherResponse, error)
+	GetWeatherApi(city string) (*dtos.WeatherResponse, error)
+	GetWeatherMs(cep string) (*dtos.WeatherResponse, error)
 }

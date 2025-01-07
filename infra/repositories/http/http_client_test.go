@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	httpclient "cep_weather/infra/repositories/http"
+	httpclient "cep_weather_otel/infra/repositories/http"
 
 	"github.com/stretchr/testify/assert"
 )

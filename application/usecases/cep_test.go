@@ -1,9 +1,9 @@
 package usecases_test
 
 import (
-	"cep_weather/application/app"
-	"cep_weather/application/usecases"
-	"cep_weather/infra/dtos"
+	"cep_weather_otel/application/app"
+	"cep_weather_otel/application/usecases"
+	"cep_weather_otel/infra/dtos"
 	"errors"
 	"net/http"
 	"testing"

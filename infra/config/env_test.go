@@ -1,7 +1,7 @@
 package env_test
 
 import (
-	env "cep_weather/infra/config"
+	env "cep_weather_otel/infra/config"
 	"os"
 	"testing"
 )

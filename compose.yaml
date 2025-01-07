@@ -1,15 +1,50 @@
 version: '3.8'
 
 services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - 1888:1888 
+      - 8888:8888 
+      - 8889:8889
+      - 13133:13133 
+      - 4317:4317 
+      - 4318:4318 
+      - 55679:55679
+    depends_on:
+      - zipkin
+    networks:
+      - app_network
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    environment:
+      - STORAGE_TYPE=mem
+      - ZIPKIN_HTTP_ENABLED=true
+      - ZIPKIN_HTTP_PORT=9411
+    networks:
+      - app_network
+
   server:
     build:
       context: .
       dockerfile: Dockerfile.dev
     ports:
       - "8080:8080"
+      - "8081:8081"
     env_file:
       - .env
     volumes:
       - .:/app
       - /app/tmp
     command: ["air"]
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge

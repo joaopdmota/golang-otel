@@ -2,10 +2,10 @@ package repositories_test
 
 import (
 	"bytes"
-	env "cep_weather/infra/config"
-	"cep_weather/infra/dtos"
-	"cep_weather/infra/repositories"
-	"cep_weather/mocks"
+	env "cep_weather_otel/infra/config"
+	"cep_weather_otel/infra/dtos"
+	"cep_weather_otel/infra/repositories"
+	"cep_weather_otel/mocks"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -72,7 +72,7 @@ func TestWeatherRepositoryGetWeatherSuccess(t *testing.T) {
 
 	repo := repositories.NewWeatherRepository(mockClient)
 
-	weather, _ := repo.GetWeather("São Paulo")
+	weather, _ := repo.GetWeatherApi("São Paulo")
 
 	assert.NotNil(t, weather)
 	assert.Equal(t, "São Paulo", weather.Location.Name)
@@ -92,7 +92,7 @@ func TestWeatherRepositoryGetWeatherError(t *testing.T) {
 
 	repo := repositories.NewWeatherRepository(mockClient)
 
-	_, err := repo.GetWeather("São Paulo")
+	_, err := repo.GetWeatherApi("São Paulo")
 
 	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "")
@@ -107,7 +107,7 @@ func TestWeatherRepositoryGetWeatherErrorDuringRequest(t *testing.T) {
 
 	repo := repositories.NewWeatherRepository(mockClient)
 
-	_, err := repo.GetWeather("São Paulo")
+	_, err := repo.GetWeatherApi("São Paulo")
 
 	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "Failed to fetch")
@@ -128,7 +128,7 @@ func TestWeatherRepositoryGetWeatherErrorDuringDecodeResponse(t *testing.T) {
 
 	repo := repositories.NewWeatherRepository(mockClient)
 
-	_, err := repo.GetWeather("São Paulo")
+	_, err := repo.GetWeatherApi("São Paulo")
 
 	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "failed to read response body")
@@ -146,7 +146,7 @@ func TestWeatherRepositoryGetWeatherErrorDuringDecodeBody(t *testing.T) {
 
 	repo := repositories.NewWeatherRepository(mockClient)
 
-	_, err := repo.GetWeather("São Paulo")
+	_, err := repo.GetWeatherApi("São Paulo")
 
 	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "")

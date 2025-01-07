@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"cep_weather/application/app"
-	"cep_weather/application/usecases/dtos"
+	"cep_weather_otel/application/app"
+	"cep_weather_otel/application/usecases/dtos"
 )
 
 type IWeatherUseCase interface {

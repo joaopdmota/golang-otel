@@ -1,7 +1,7 @@
 package server_test
 
 import (
-	"cep_weather/infra/server"
+	"cep_weather_otel/infra/server"
 	"io"
 	"net/http"
 	"net/http/httptest"

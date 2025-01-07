@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	"cep_weather/application/app"
-	"cep_weather/application/usecases/dtos"
-	"cep_weather/mocks"
+	"cep_weather_otel/application/app"
+	"cep_weather_otel/application/usecases/dtos"
+	"cep_weather_otel/mocks"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	repoDTOS "cep_weather/infra/dtos"
+	repoDTOS "cep_weather_otel/infra/dtos"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"

@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"cep_weather/infra/dtos"
-	http "cep_weather/infra/repositories/http"
+	"cep_weather_otel/infra/dtos"
+	http "cep_weather_otel/infra/repositories/http"
 	"encoding/json"
 	"fmt"
 	httpNet "net/http"
